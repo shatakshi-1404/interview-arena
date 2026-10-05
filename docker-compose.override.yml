@@ -1,0 +1,18 @@
+# Development conveniences. Not used when you run:  docker compose -f docker-compose.yml up
+services:
+  postgres:
+    ports:
+      - "5432:5432"
+
+  backend:
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  # In development the frontend runs with `npm run dev`. Start the container too with:  --profile full
+  frontend:
+    profiles: ["full"]
