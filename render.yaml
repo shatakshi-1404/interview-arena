@@ -1,0 +1,59 @@
+# Render Blueprint: the API (Docker) + a managed PostgreSQL database.
+# The website is deployed separately on Vercel (see docs/DEPLOY_VERCEL_RENDER.md).
+#
+# Render dashboard -> New -> Blueprint -> pick this repo. It will ask for the values marked `sync: false`.
+databases:
+  - name: interviewarena-db
+    databaseName: interviewarena
+    user: interviewarena
+    plan: free # free databases expire after 30 days: switch to a paid plan, or recreate, to keep your data
+
+services:
+  - type: web
+    name: interviewarena-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free # sleeps after ~15 min idle; the first request afterwards takes ~30-60 s
+    healthCheckPath: /api/ready
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: interviewarena-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ENVIRONMENT
+        value: production
+      # Your Vercel URL(s), comma-separated, no trailing slash. Example: https://interviewarena.vercel.app
+      - key: CORS_ORIGINS
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      # First admin account, created/promoted by the seed step on every start (idempotent).
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ML_ENABLED
+        value: "true" # set to "false" if the free 512 MB instance runs out of memory
+      - key: RATE_LIMIT_ENABLED
+        value: "true"
+      # ---- running coding questions: "disabled" or "judge0" (needs JUDGE0_URL; see the guide)
+      - key: CODE_RUNNER
+        value: disabled
+      - key: JUDGE0_URL
+        value: ""
+      - key: JUDGE0_API_KEY
+        sync: false
+      - key: JUDGE0_API_HOST
+        value: ""
+      # ---- generative AI: "disabled", "openai_compatible" or "anthropic" (see the guide)
+      - key: LLM_PROVIDER
+        value: disabled
+      - key: LLM_BASE_URL
+        value: ""
+      - key: LLM_MODEL
+        value: ""
+      - key: LLM_API_KEY
+        sync: false

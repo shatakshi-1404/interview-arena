@@ -1,0 +1,5 @@
+# Replace with your own domain (its DNS A record must point at this server).
+{$DOMAIN} {
+	encode gzip
+	reverse_proxy frontend:8080
+}

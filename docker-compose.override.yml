@@ -1,0 +1,21 @@
+# Development conveniences. Not used when you run:  docker compose -f docker-compose.yml up
+services:
+  postgres:
+    ports:
+      - "5432:5432"
+
+  backend:
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    command: >
+      sh -c "alembic upgrade head &&
+             python -m scripts.seed &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  # The built site is served at http://localhost:8080 (nginx proxies /api to the backend).
+  # For hot reload instead, run `npm run dev` in ./frontend and open http://localhost:5173.
+  frontend:
+    ports:
+      - "8080:8080"
