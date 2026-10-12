@@ -157,10 +157,17 @@ def _ensure_role() -> None:
                       CREATE ROLE {SANDBOX_ROLE} NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE;
                     EXCEPTION WHEN duplicate_object THEN NULL; END $$"""
             )
+            # PostgreSQL 16+: a user who creates a role may administer it but cannot SET ROLE to it until granted.
+            try:
+                c.execute(f"GRANT {SANDBOX_ROLE} TO CURRENT_USER WITH SET TRUE")
+            except pg_errors.SyntaxError:  # PostgreSQL < 16: a plain grant is enough
+                c.execute(f"GRANT {SANDBOX_ROLE} TO CURRENT_USER")
+            with c.transaction():  # prove SET ROLE works before relying on it
+                c.execute(f"SET LOCAL ROLE {SANDBOX_ROLE}")
     except pg_errors.InsufficientPrivilege:
-        # Some managed databases do not let the app user create roles. Layers 1-3 and 5 still apply
+        # Some managed databases do not allow this. The other protections still apply
         # (static validation, throwaway schema, read-only transaction, timeout and row cap).
-        logger.warning("Cannot CREATE ROLE %s here; SQL questions will run without the no-privilege role", SANDBOX_ROLE)
+        logger.warning("Cannot use role %s here; SQL questions will run without the no-privilege role", SANDBOX_ROLE)
         _role_available = False
     _role_ready = True
 
