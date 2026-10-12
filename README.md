@@ -55,9 +55,6 @@ An overview of the user's interview preparation activity and progress.
 
 Practice technical concepts through multiple-choice questions.
 
-<p align="center">
-  <img src="screenshots/mcq-practice.png" alt="MCQ Practice Page" width="90%"/>
-</p>
 
 ### 4. SQL Practice
 
