@@ -92,17 +92,12 @@ Review preparation activity, performance trends, and weak topics.
 
 A machine-learning-based readiness score designed to guide preparation.
 
-<p align="center">
-  <img src="screenshots/readiness-score.png" alt="Interview Readiness Page" width="90%"/>
-</p>
 
 ### 9. Achievements and Leaderboard
 
 Track practice streaks, achievements, and leaderboard progress.
 
-<p align="center">
-  <img src="screenshots/achievements.png" alt="Achievements Page" width="90%"/>
-</p>
+
 
 ### 10. Admin Dashboard
 
